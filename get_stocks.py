@@ -67,14 +67,13 @@ def mk_dataframe(listy, ind):
 # Start/End dates for stock data
 years = 1
 end = d.date.today()
-start = end - d.timedelta(days=(365 * years))
+start = end - d.timedelta(days=10)
 
 # Ticker List
 tickers = []
 with open(tickerlist) as file:
     for line in file:
-        line = line.strip()
-        tickers.append(line)
+        tickers.append(line.rstrip("\n"))
 
 stocks = stock_reader(tickers, start, end)
 
