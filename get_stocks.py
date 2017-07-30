@@ -64,6 +64,29 @@ def mk_dataframe(listy, ind):
 
     return stockmatrix
 
+def stock_returns(stockdat):
+    """
+    Converts stocks to returns
+
+    :param stockdat: Dataframe of stocks
+    :return: Dataframe
+    """
+
+    num = stockdat.copy()
+    num.drop(num.index[0], inplace=True)
+    div = stockdat.copy()
+    div.drop(div.index[-1], inplace=True)
+
+    retindex=num.index
+    num.index=range(1, len(retindex)+1)
+    div.index=num.index
+
+    num=num.divide(div, axis='index', fill_value=0)
+    num.index=retindex
+
+    return num
+
+
 # Start/End dates for stock data
 years = 1
 end = d.date.today()
@@ -79,6 +102,8 @@ stocks = stock_reader(tickers, start, end)
 
 stockmat = mk_dataframe(stocks, tickers)
 
+returnsmat = stock_returns(stockmat)
+
 # Ouput new ticker list
 file_out = open("tickers_new.txt", "w")
 for t in tickers:
@@ -86,4 +111,4 @@ for t in tickers:
 file_out.close()
 
 # Store in CSV
-stockmat.to_csv(database)
+returnsmat.to_csv(database)

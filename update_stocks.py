@@ -17,8 +17,7 @@ if start == end:
 tickers = []
 with open(tickerlist) as file:
     for line in file:
-        line = line.strip()
-        tickers.append(line)
+        tickers.append(line.rstrip("\n"))
 
 # Get stock data
 stocks = get_stocks.stock_reader(tickers, start, end)
