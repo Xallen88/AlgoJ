@@ -3,8 +3,9 @@ import pandas_datareader as pdr
 from pandas_datareader._utils import RemoteDataError
 import datetime as d
 
-database = "datatest.csv"
-tickerlist = "tickerstest.txt"
+database = "data/datatest.csv"
+tickerlist = "data/tickerstest.txt"
+tickerout = "data/tickers_new.txt"
 
 # Takes in ticker list and returns stock data
 def stock_reader(ticker, st, e):
@@ -105,7 +106,7 @@ stockmat = mk_dataframe(stocks, tickers)
 returnsmat = stock_returns(stockmat)
 
 # Ouput new ticker list
-file_out = open("tickers_new.txt", "w")
+file_out = open(tickerout, "w")
 for t in tickers:
     file_out.write("{}\n" .format(t))
 file_out.close()

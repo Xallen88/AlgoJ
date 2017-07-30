@@ -1,7 +1,7 @@
 import pandas as pd
 import datetime as d
 
-database = "datatest.csv"
+database = "data/datatest.csv"
 
 def read_stocks(s, e, opt):
     """

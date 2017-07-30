@@ -7,7 +7,7 @@ tickerlist = get_stocks.tickerlist
 
 # Find last data date
 stocks_db = pd.read_csv(database, index_col=0)
-start = d.datetime.strptime(stocks_db.index[-1], "%Y-%m-%d") + d.timedelta(days=1)
+start = d.datetime.strptime(stocks_db.index[-1], "%Y-%m-%d")
 end = d.date.today()
 
 if start == end:
@@ -22,6 +22,7 @@ with open(tickerlist) as file:
 # Get stock data
 stocks = get_stocks.stock_reader(tickers, start, end)
 stockmat = get_stocks.mk_dataframe(stocks, tickers)
+returnsmat = get_stocks.stock_returns(stockmat)
 
 # Append csv file with new dataframe
-stockmat.to_csv(database, mode="a", header=False)
+returnsmat.to_csv(database, mode="a", header=False)
