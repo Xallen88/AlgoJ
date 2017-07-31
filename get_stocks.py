@@ -91,7 +91,7 @@ def stock_returns(stockdat):
 # Start/End dates for stock data
 years = 1
 end = d.date.today()
-start = end - d.timedelta(days=10)
+start = end - d.timedelta(days=365)
 
 # Ticker List
 tickers = []
