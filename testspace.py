@@ -9,7 +9,7 @@ trades = "trades/test1.csv"
 
 datamat = rs.read_stocks("2016-08-02", "2017-07-28", 0)
 
-ra.run_algo(datamat, algo.cum_return, 14)
+ra.run_algo(datamat, algo.cum_return, 2, 7)
 
 trademat = pd.read_csv(trades, index_col=0)
 

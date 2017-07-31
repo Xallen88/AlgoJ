@@ -4,22 +4,29 @@ import math
 
 tradeoutput="trades/test1.csv"
 
-def run_algo(datamat, algo, training):
+def run_algo(datamat, algo, training, freq):
 	"""
 	Runs an algorithm and outputs a trade matrix
 
 	:param datamat: Dataframe containing stock returns
 	:param algo: Algorithm function
-	:param training: Length of time to use for training
+	:param training: Length of training set in days
+	:param freq: Trading frequency in days
 	"""
 
-	end=d.datetime.strptime(datamat.index[0],"%Y-%m-%d")
+	start=d.datetime.strptime(datamat.index[0],"%Y-%m-%d")-d.timedelta(days=freq)
 	trademat=pd.DataFrame(columns=datamat.columns.values.tolist())
+	numdays=d.datetime.strptime(datamat.index[-1],"%Y-%m-%d")-d.datetime.strptime(datamat.index[0],"%Y-%m-%d")
 
-	runs=math.ceil(len(datamat.index)/training)-1
+	runs=math.ceil((numdays.days-training)/freq)
 	for i in range(runs):
-		start=end
-		end=end+d.timedelta(days=training)
+		start=start+d.timedelta(days=freq)
+		while(True):
+			if d.datetime.strftime(start,"%Y-%m-%d") in datamat.index:
+				break
+			else:
+				start=start+d.timedelta(days=1)
+		end=start+d.timedelta(days=training)
 		while(True):
 			if d.datetime.strftime(end,"%Y-%m-%d") in datamat.index:
 				break
