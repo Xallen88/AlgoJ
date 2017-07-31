@@ -53,3 +53,26 @@ def total_return (returnsmat, trademat, end):
 		tradereturn = 0
 
 	return totalreturn
+
+def positive_returns (returnsmat, trademat, end):
+	posreturn = 0
+	tradereturn = 0
+
+	tradedates = trademat.index.tolist()
+
+	if d.datetime.strptime(returnsmat.index[-1], "%Y-%m-%d") < d.datetime.strptime(end, "%Y-%m-%d"):
+		tradedates.append(returnsmat.index[-1])
+	else:
+		tradedates.append(end)
+
+	tickers = trademat.columns.values.tolist()
+	for td, ntd in zip(tradedates[:-1], tradedates[1:]):
+		for stock in tickers:
+			if trademat.at[td,stock] > 0:
+				tradereturn = trade_return (returnsmat, stock, td, ntd) * trademat.at[td,stock] + tradereturn
+		if tradereturn>0:
+			posreturn=posreturn+1
+		tradereturn = 0
+
+	return posreturn/len(tradedates)
+	
