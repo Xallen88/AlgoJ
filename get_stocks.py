@@ -3,8 +3,8 @@ import pandas_datareader as pdr
 from pandas_datareader._utils import RemoteDataError
 import datetime as d
 
-database = "data/datatest.csv"
-tickerlist = "data/tickerstest.txt"
+database = "data/data.csv"
+tickerlist = "data/tickers.txt"
 tickerout = "data/tickers_new.txt"
 
 # Takes in ticker list and returns stock data
@@ -26,8 +26,11 @@ def stock_reader(ticker, st, e):
             ret.append(pdr.DataReader(t, "yahoo", st, e))
         except RemoteDataError:
             try:
-                ret.append(pdr.DataReader(t + "X", "yahoo", st, e))
-                ticker[i] = t + "X"
+                if (t+"X") not in ticker:
+                    ret.append(pdr.DataReader(t + "X", "yahoo", st, e))
+                    ticker[i] = t + "X"
+                else:
+                    err.append(i)
             except RemoteDataError:
                 err.append(i)
         i += 1
@@ -101,15 +104,16 @@ with open(tickerlist) as file:
 
 stocks = stock_reader(tickers, start, end)
 
-stockmat = mk_dataframe(stocks, tickers)
-
-returnsmat = stock_returns(stockmat)
-
 # Ouput new ticker list
 file_out = open(tickerout, "w")
 for t in tickers:
     file_out.write("{}\n" .format(t))
 file_out.close()
+
+stockmat = mk_dataframe(stocks, tickers)
+
+returnsmat = stock_returns(stockmat)
+
 
 # Store in CSV
 returnsmat.to_csv(database)

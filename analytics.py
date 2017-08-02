@@ -3,16 +3,6 @@ import datetime as d
 
 
 def trade_return (returnsmat, ticker, start, end):
-	"""
-	Return for a single trade of a single ticker
-
-	:param returnsmat: Dataframe of stock returns
-	:param ticker: Stock symbol
-	:param start: Date of trade (end of day)
-	:param end: Date of trade (end of day)
-	:return: Return from single trade
-	"""
-
 	tradereturn = 1
 
 	stockreturn = returnsmat.ix[start:end, ticker].tolist()
@@ -23,18 +13,8 @@ def trade_return (returnsmat, ticker, start, end):
 
 	return tradereturn
 
-
-def total_return (returnsmat, trademat, end):
-	"""
-	Generates the total return for a given trade matrix
-
-	:param returnsmat: Dataframe of stock returns
-	:param trademat: Dataframe of trades (weightings)
-	:param end: End of return period
-	:return: Total return from trades
-	"""
-
-	totalreturn = 1
+def returns_anal (returnsmat, trademat, end, anal):
+	ret = 1
 	tradereturn = 0
 
 	tradedates = trademat.index.tolist()
@@ -47,32 +27,35 @@ def total_return (returnsmat, trademat, end):
 	tickers = trademat.columns.values.tolist()
 	for td, ntd in zip(tradedates[:-1], tradedates[1:]):
 		for stock in tickers:
-			if trademat.at[td,stock] > 0:
+			if trademat.at[td,stock] != 0:
 				tradereturn = trade_return (returnsmat, stock, td, ntd) * trademat.at[td,stock] + tradereturn
-		totalreturn = totalreturn * tradereturn
+		ret=anal(ret,tradereturn) 	# function-dependent
 		tradereturn = 0
 
-	return totalreturn
+	return anal(ret, tradereturn, len(tradedates))
 
-def positive_returns (returnsmat, trademat, end):
-	posreturn = 0
-	tradereturn = 0
 
-	tradedates = trademat.index.tolist()
-
-	if d.datetime.strptime(returnsmat.index[-1], "%Y-%m-%d") < d.datetime.strptime(end, "%Y-%m-%d"):
-		tradedates.append(returnsmat.index[-1])
+def total_return (ret, tradereturn, n=0):
+	if n>0:
+		return ret
 	else:
-		tradedates.append(end)
+		return ret*tradereturn
 
-	tickers = trademat.columns.values.tolist()
-	for td, ntd in zip(tradedates[:-1], tradedates[1:]):
-		for stock in tickers:
-			if trademat.at[td,stock] > 0:
-				tradereturn = trade_return (returnsmat, stock, td, ntd) * trademat.at[td,stock] + tradereturn
-		if tradereturn>0:
-			posreturn=posreturn+1
-		tradereturn = 0
+def positive_returns (ret, tradereturn, n=0):
+	if n>0:
+		return (ret-1)/n
+	else:
+		if tradereturn>1:
+			return ret+1
+		else:
+			return ret
 
-	return posreturn/len(tradedates)
-	
+def big_loss (ret, tradereturn, n=0):
+	if n>0:
+		return (ret-1)/n
+	else:
+		bl=0.90
+		if tradereturn<bl:
+			return ret+1
+		else:
+			return ret
